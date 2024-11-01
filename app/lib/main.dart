@@ -63,6 +63,7 @@ final class _App extends StatelessWidget {
       initialRoute: initialRoute,
       theme: ThemeData(
         colorSchemeSeed: Colors.teal,
+        fontFamily: "Roboto",
       ),
     );
   }

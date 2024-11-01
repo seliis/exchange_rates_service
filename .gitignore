@@ -1,5 +1,4 @@
 # General
-public/
 *.log
 *.db
 
@@ -11,3 +10,6 @@ app/pubspec.lock
 app/.dart_tool/
 app/.idea/
 app/build/
+
+# Build
+package

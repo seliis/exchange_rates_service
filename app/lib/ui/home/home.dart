@@ -14,66 +14,173 @@ final class Home extends StatelessWidget {
 
   @override
   Widget build(context) {
-    return BlocListener(
-      bloc: BlocProvider.of<usecases.GetExchangeData>(context),
-      listener: (context, state) {
-        if (state is usecases.GetExchangeDataFailure) {
-          showDialog<void>(
-            context: context,
-            builder: (_) {
-              return common_ui.ErrorDialog(
-                message: state.message,
-              );
-            },
-          );
-        }
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final bool isMobile = constraints.maxWidth < 768;
 
-        if (state is usecases.GetExchangeDataSuccess) {
-          showDialog<void>(
-            context: context,
-            builder: (_) {
-              return _Dialog(data: state.exchangeData);
-            },
-          );
-        }
+        return BlocListener(
+          bloc: BlocProvider.of<usecases.GetExchangeData>(context),
+          listener: (context, state) {
+            final size = MediaQuery.of(context).size;
+            final width = size.width * 0.90;
+            final height = size.height * 0.70;
+
+            if (state is usecases.GetExchangeDataFailure) {
+              showDialog<void>(
+                context: context,
+                builder: (_) {
+                  return common_ui.ErrorDialog(
+                    message: state.message,
+                    width: isMobile ? width : 512,
+                    height: isMobile ? height : 256,
+                  );
+                },
+              );
+            }
+
+            if (state is usecases.GetExchangeDataSuccess) {
+              showDialog<void>(
+                context: context,
+                builder: (_) {
+                  return _Dialog(
+                    data: state.exchangeData,
+                    width: isMobile ? width : 512,
+                    height: isMobile ? height : 256,
+                  );
+                },
+              );
+            }
+          },
+          child: _View(
+            isMobile: isMobile,
+          ),
+        );
       },
-      child: const _View(),
     );
   }
 }
 
 final class _View extends StatelessWidget {
-  const _View();
+  const _View({
+    required this.isMobile,
+  });
+
+  final bool isMobile;
 
   @override
   Widget build(context) {
     return Scaffold(
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          const SizedBox.shrink(),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const _Currencies(),
-              const SizedBox(
-                width: 16,
-              ),
-              SizedBox(
-                width: 256,
-                child: common_ui.DateField(
+      body: isMobile ? const _Mobile() : const _Desktop(),
+    );
+  }
+}
+
+final class _Mobile extends StatelessWidget {
+  const _Mobile();
+
+  @override
+  Widget build(context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        const SizedBox.shrink(),
+        SizedBox(
+          width: double.infinity,
+          child: Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: MediaQuery.of(context).size.width * 0.10,
+              vertical: 16,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const _Currencies(
+                  expand: true,
+                ),
+                const SizedBox(
+                  height: 16,
+                ),
+                common_ui.DateField(
                   controller: presenters.Home.controller,
                 ),
-              ),
-              const SizedBox(
-                width: 16,
-              ),
-              const _Button(),
-            ],
+                const SizedBox(
+                  height: 16,
+                ),
+                const SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: _Button(),
+                ),
+              ],
+            ),
           ),
-          const Text("Developed by In Son at Aero K Airlines, 2024"),
-        ],
+        ),
+        const _Footer(
+          isMobile: true,
+        ),
+      ],
+    );
+  }
+}
+
+final class _Desktop extends StatelessWidget {
+  const _Desktop();
+
+  @override
+  Widget build(context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        const SizedBox.shrink(),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const _Currencies(
+              expand: false,
+            ),
+            const SizedBox(
+              width: 16,
+            ),
+            SizedBox(
+              width: 256,
+              child: common_ui.DateField(
+                controller: presenters.Home.controller,
+              ),
+            ),
+            const SizedBox(
+              width: 16,
+            ),
+            const SizedBox(
+              width: 128,
+              height: 48,
+              child: _Button(),
+            ),
+          ],
+        ),
+        const _Footer(
+          isMobile: false,
+        ),
+      ],
+    );
+  }
+}
+
+final class _Footer extends StatelessWidget {
+  const _Footer({
+    required this.isMobile,
+  });
+
+  final bool isMobile;
+
+  @override
+  Widget build(context) {
+    return Text(
+      "© 2024 Aero K Airlines. Developed by In Son.",
+      style: TextStyle(
+        fontWeight: FontWeight.w100,
+        fontSize: isMobile ? 12 : 16,
       ),
     );
   }
@@ -82,9 +189,13 @@ final class _View extends StatelessWidget {
 final class _Dialog extends StatelessWidget {
   const _Dialog({
     required this.data,
+    required this.width,
+    required this.height,
   });
 
   final entities.ExchangeData data;
+  final double width;
+  final double height;
 
   @override
   Widget build(context) {
@@ -96,11 +207,12 @@ final class _Dialog extends StatelessWidget {
         ),
       ),
       content: SizedBox(
-        width: 512,
-        height: 256,
-        child: Column(
+        width: width,
+        height: height,
+        child: ListView(
           children: [
             ListTile(
+              contentPadding: EdgeInsets.zero,
               title: const Text(
                 "Currency",
                 style: TextStyle(
@@ -110,6 +222,7 @@ final class _Dialog extends StatelessWidget {
               subtitle: Text(data.currency),
             ),
             ListTile(
+              contentPadding: EdgeInsets.zero,
               title: const Text(
                 "Date",
                 style: TextStyle(
@@ -119,6 +232,7 @@ final class _Dialog extends StatelessWidget {
               subtitle: Text(data.date),
             ),
             ListTile(
+              contentPadding: EdgeInsets.zero,
               title: const Text(
                 "Rates",
                 style: TextStyle(
@@ -134,8 +248,9 @@ final class _Dialog extends StatelessWidget {
               ),
             ),
             ListTile(
+              contentPadding: EdgeInsets.zero,
               title: const Text(
-                "AMOS Rates",
+                "Rates For AMOS",
                 style: TextStyle(
                   fontWeight: FontWeight.w700,
                 ),
@@ -164,11 +279,18 @@ final class _Dialog extends StatelessWidget {
 }
 
 final class _Currencies extends StatelessWidget {
-  const _Currencies();
+  const _Currencies({
+    required this.expand,
+  });
+
+  final bool expand;
 
   @override
   Widget build(context) {
     return DropdownMenu(
+      width: expand ? null : 128,
+      label: const Text("Currency"),
+      expandedInsets: expand ? EdgeInsets.zero : null,
       initialSelection: presenters.Home.currency,
       onSelected: (value) {
         if (value != null) {
@@ -205,7 +327,6 @@ final class _Button extends StatelessWidget {
     return FilledButton(
       onPressed: onPressed(),
       style: FilledButton.styleFrom(
-        fixedSize: const Size(128, 48),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),

@@ -4,9 +4,13 @@ final class ErrorDialog extends StatelessWidget {
   const ErrorDialog({
     super.key,
     required this.message,
+    this.width = 512,
+    this.height = 256,
   });
 
   final String message;
+  final double width;
+  final double height;
 
   @override
   Widget build(context) {
@@ -29,8 +33,8 @@ final class ErrorDialog extends StatelessWidget {
         ],
       ),
       content: SizedBox(
-        width: 512,
-        height: 256,
+        width: width,
+        height: height,
         child: Text(message),
       ),
       actions: [

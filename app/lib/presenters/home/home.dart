@@ -7,11 +7,11 @@ final class Home {
   static List<String> currencies = dotenv.env["CURRENCIES"]?.split(",") ??
       [
         "USD",
-        // "CHF",
-        // "EUR",
-        // "GBP",
-        // "JPY",
-        // "THB"
+        "CHF",
+        "EUR",
+        "GBP",
+        "JPY",
+        "THB"
       ];
 
   static final controller = TextEditingController(
