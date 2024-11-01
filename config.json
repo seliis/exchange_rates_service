@@ -1,4 +1,6 @@
 {
+    "app_name": "Exchange Rates Service",
+    "app_version": "0.0.1",
     "debug_mode": true,
     "base": "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON",
     "api_key": "CtRNXmPEu3mUfNA8XqDXOHzZHlFxvWBL",

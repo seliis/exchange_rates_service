@@ -6,6 +6,8 @@ import (
 )
 
 type Config struct {
+	AppName    string   `json:"app_name"`
+	AppVersion string   `json:"app_version"`
 	DebugMode  bool     `json:"debug_mode"`
 	Base       string   `json:"base"`
 	ApiKey     string   `json:"api_key"`

@@ -57,6 +57,7 @@ final class _App extends StatelessWidget {
   @override
   Widget build(context) {
     return MaterialApp(
+      title: "Exchange Rates Service v0.0.1",
       onGenerateRoute: navigation.onGenerateRoute,
       debugShowCheckedModeBanner: false,
       initialRoute: initialRoute,

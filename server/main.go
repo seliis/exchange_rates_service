@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"package/server/config"
 	"package/server/database"
 	"package/server/debug"
@@ -35,7 +36,9 @@ func init() {
 }
 
 func main() {
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		AppName: fmt.Sprintf("%s v%s", config.Data.AppName, config.Data.AppVersion),
+	})
 
 	app.Use(cors.New(
 		cors.Config{
