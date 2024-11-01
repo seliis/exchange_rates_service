@@ -1,0 +1,13 @@
+# General
+public/
+*.log
+*.db
+
+# Server
+go.sum
+
+# App
+app/pubspec.lock
+app/.dart_tool/
+app/.idea/
+app/build/

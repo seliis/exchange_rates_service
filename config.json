@@ -1,0 +1,15 @@
+{
+    "debug_mode": true,
+    "base": "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON",
+    "api_key": "CtRNXmPEu3mUfNA8XqDXOHzZHlFxvWBL",
+    "data_type": "AP01",
+    "port": "8080",
+    "currencies": [
+        "USD",
+        "CHF",
+        "EUR",
+        "GBP",
+        "JPY",
+        "THB"
+    ]
+}
