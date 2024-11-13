@@ -1,4 +1,4 @@
-package models
+package entities
 
 type Primitive struct {
 	RequestResult           int    `json:"result"`

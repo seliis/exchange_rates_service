@@ -29,15 +29,20 @@ final class _DependencyInjector extends StatelessWidget {
   Widget build(context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<repositories.ExchangeRepository>(
-          create: (_) => repositories.ExchangeRepository(),
+        RepositoryProvider<repositories.CurrencyRepository>(
+          create: (_) => repositories.CurrencyRepository(),
         ),
       ],
       child: MultiBlocProvider(
         providers: [
-          BlocProvider<usecases.GetExchangeData>(
-            create: (context) => usecases.GetExchangeData(
-              exchangeRepository: RepositoryProvider.of<repositories.ExchangeRepository>(context),
+          BlocProvider<usecases.GetCurrencyCodes>(
+            create: (context) => usecases.GetCurrencyCodes(
+              currencyRepository: RepositoryProvider.of<repositories.CurrencyRepository>(context),
+            )..execute(),
+          ),
+          BlocProvider<usecases.GetCurrency>(
+            create: (context) => usecases.GetCurrency(
+              currencyRepository: RepositoryProvider.of<repositories.CurrencyRepository>(context),
             ),
           ),
         ],
@@ -57,7 +62,7 @@ final class _App extends StatelessWidget {
   @override
   Widget build(context) {
     return MaterialApp(
-      title: "Exchange Rates Service v0.0.1",
+      title: "Currency Information Service v0.0.1",
       onGenerateRoute: navigation.onGenerateRoute,
       debugShowCheckedModeBanner: false,
       initialRoute: initialRoute,

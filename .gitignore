@@ -1,4 +1,6 @@
 # General
+*.crt
+*.p12
 *.log
 *.db
 

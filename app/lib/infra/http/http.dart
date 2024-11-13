@@ -3,7 +3,7 @@ import "dart:convert";
 import "package:flutter_dotenv/flutter_dotenv.dart";
 import "package:http/http.dart" as http;
 
-final class Response {
+final class Response<T> {
   Response({
     required this.isSuccess,
     required this.errorMessage,
@@ -12,13 +12,27 @@ final class Response {
 
   final bool isSuccess;
   final String? errorMessage;
-  final Map<String, dynamic> data;
+  final T data;
 
   factory Response.fromJson(Map<String, dynamic> json) {
+    final isSuccess = json["is_success"] as bool;
+    final errorMessage = json["error_message"] as String?;
+    final data = json["data"] as dynamic;
+
+    late T dataCasted;
+
+    if (data is List) {
+      dataCasted = data.map((item) => item as Map<String, dynamic>).toList() as T;
+    } else if (data is Map) {
+      dataCasted = data as T;
+    } else {
+      throw Exception("data is not supported");
+    }
+
     return Response(
-      isSuccess: json["is_success"] as bool,
-      errorMessage: json["error_message"] as String?,
-      data: json["data"] == null ? {} : json["data"] as Map<String, dynamic>,
+      isSuccess: isSuccess,
+      errorMessage: errorMessage,
+      data: dataCasted,
     );
   }
 }
@@ -30,7 +44,7 @@ enum HttpMethod {
 final class Http {
   static String? baseUrl = dotenv.env["BASE_URL"];
 
-  static Future<Response> request(
+  static Future<Response<T>> request<T>(
     HttpMethod method,
     String path,
   ) async {
@@ -40,6 +54,8 @@ final class Http {
 
     final Uri uri = Uri.parse("$baseUrl/api$path");
     late http.Response response;
+
+    await Future<void>.delayed(const Duration(seconds: 3));
 
     switch (method) {
       case HttpMethod.get:

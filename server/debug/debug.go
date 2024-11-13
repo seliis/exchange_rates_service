@@ -8,7 +8,7 @@ import (
 )
 
 func Start(fileName string) error {
-	if !config.Data.DebugMode {
+	if !config.ServerConfig.IsDebugMode {
 		return nil
 	}
 

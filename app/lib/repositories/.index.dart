@@ -1,1 +1,1 @@
-export "exchange/exchange_repository.dart";
+export "currency/currency_repository.dart";

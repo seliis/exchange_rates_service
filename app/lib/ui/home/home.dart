@@ -19,13 +19,13 @@ final class Home extends StatelessWidget {
         final bool isMobile = constraints.maxWidth < 768;
 
         return BlocListener(
-          bloc: BlocProvider.of<usecases.GetExchangeData>(context),
+          bloc: BlocProvider.of<usecases.GetCurrency>(context),
           listener: (context, state) {
             final size = MediaQuery.of(context).size;
             final width = size.width * 0.90;
             final height = size.height * 0.70;
 
-            if (state is usecases.GetExchangeDataFailure) {
+            if (state is usecases.GetCurrencyFailure) {
               showDialog<void>(
                 context: context,
                 builder: (_) {
@@ -38,12 +38,12 @@ final class Home extends StatelessWidget {
               );
             }
 
-            if (state is usecases.GetExchangeDataSuccess) {
+            if (state is usecases.GetCurrencySuccess) {
               showDialog<void>(
                 context: context,
                 builder: (_) {
                   return _Dialog(
-                    data: state.exchangeData,
+                    currency: state.currency,
                     width: isMobile ? width : 512,
                     height: isMobile ? height : 256,
                   );
@@ -70,7 +70,30 @@ final class _View extends StatelessWidget {
   @override
   Widget build(context) {
     return Scaffold(
-      body: isMobile ? const _Mobile() : const _Desktop(),
+      body: BlocBuilder<usecases.GetCurrencyCodes, usecases.GetCurrencyCodesState>(
+        bloc: BlocProvider.of<usecases.GetCurrencyCodes>(context),
+        builder: (context, state) {
+          if (state is usecases.GetCurrencyCodesLoading) {
+            return const Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            );
+          }
+
+          if (state is usecases.GetCurrencyCodesFailure) {
+            return Center(
+              child: Text(state.message),
+            );
+          }
+
+          if (state is usecases.GetCurrencyCodesSuccess) {
+            return isMobile ? const _Mobile() : const _Desktop();
+          }
+
+          return const SizedBox.shrink();
+        },
+      ),
     );
   }
 }
@@ -188,12 +211,12 @@ final class _Footer extends StatelessWidget {
 
 final class _Dialog extends StatelessWidget {
   const _Dialog({
-    required this.data,
+    required this.currency,
     required this.width,
     required this.height,
   });
 
-  final entities.ExchangeData data;
+  final entities.Currency currency;
   final double width;
   final double height;
 
@@ -219,7 +242,7 @@ final class _Dialog extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              subtitle: Text(data.currency),
+              subtitle: Text(currency.curreencyCode),
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
@@ -229,37 +252,21 @@ final class _Dialog extends StatelessWidget {
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              subtitle: Text(data.date),
+              subtitle: Text(currency.date),
             ),
             ListTile(
               contentPadding: EdgeInsets.zero,
-              title: const Text(
-                "Rates",
-                style: TextStyle(
+              title: Text(
+                "One ${currency.curreencyCode} Equals",
+                style: const TextStyle(
                   fontWeight: FontWeight.w700,
                 ),
               ),
-              subtitle: Text(data.rates.toString()),
+              subtitle: Text("${currency.rate.toString()} KRW"),
               trailing: IconButton(
                 icon: const Icon(Icons.copy),
                 onPressed: () {
-                  Clipboard.setData(ClipboardData(text: data.rates.toString()));
-                },
-              ),
-            ),
-            ListTile(
-              contentPadding: EdgeInsets.zero,
-              title: const Text(
-                "Rates For AMOS",
-                style: TextStyle(
-                  fontWeight: FontWeight.w700,
-                ),
-              ),
-              subtitle: Text(data.amosRates.toString()),
-              trailing: IconButton(
-                icon: const Icon(Icons.copy),
-                onPressed: () {
-                  Clipboard.setData(ClipboardData(text: data.amosRates.toString()));
+                  Clipboard.setData(ClipboardData(text: currency.rate.toString()));
                 },
               ),
             ),
@@ -287,20 +294,22 @@ final class _Currencies extends StatelessWidget {
 
   @override
   Widget build(context) {
+    final state = context.watch<usecases.GetCurrencyCodes>().state as usecases.GetCurrencyCodesSuccess;
+
     return DropdownMenu(
       width: expand ? null : 128,
       label: const Text("Currency"),
       expandedInsets: expand ? EdgeInsets.zero : null,
-      initialSelection: presenters.Home.currency,
-      onSelected: (value) {
-        if (value != null) {
-          presenters.Home.currency = value;
+      initialSelection: presenters.Home.selectedCurrencyCode,
+      onSelected: (currencyCode) {
+        if (currencyCode != null) {
+          presenters.Home.selectedCurrencyCode = currencyCode;
         }
       },
-      dropdownMenuEntries: presenters.Home.currencies.map((currency) {
+      dropdownMenuEntries: state.currencyCodes.map((currencyCode) {
         return DropdownMenuEntry(
-          value: currency,
-          label: currency,
+          value: currencyCode,
+          label: currencyCode,
         );
       }).toList(),
     );
@@ -312,7 +321,7 @@ final class _Button extends StatelessWidget {
 
   @override
   Widget build(context) {
-    final bool isLoading = context.watch<usecases.GetExchangeData>().state is usecases.GetExchangeDataLoading;
+    final bool isLoading = context.watch<usecases.GetCurrency>().state is usecases.GetCurrencyLoading;
 
     void Function()? onPressed() {
       if (isLoading) {
@@ -320,7 +329,10 @@ final class _Button extends StatelessWidget {
       }
 
       return () {
-        context.read<usecases.GetExchangeData>().execute(presenters.Home.data);
+        context.read<usecases.GetCurrency>().execute(
+              currencyCode: presenters.Home.selectedCurrencyCode,
+              date: presenters.Home.controller.text,
+            );
       };
     }
 

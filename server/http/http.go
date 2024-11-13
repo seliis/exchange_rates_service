@@ -1,6 +1,7 @@
 package http
 
 import (
+	"crypto/tls"
 	"time"
 
 	"github.com/gofiber/fiber/v3/client"
@@ -13,6 +14,9 @@ func Start() {
 
 	instance.SetCookieJar(client.AcquireCookieJar())
 	instance.SetTimeout(10 * time.Second)
+	instance.SetTLSConfig(&tls.Config{
+		InsecureSkipVerify: true,
+	})
 
 	Instance = instance
 }

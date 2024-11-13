@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"package/server/config"
 	"package/server/database"
@@ -16,6 +17,8 @@ import (
 )
 
 func init() {
+	context := context.Background()
+
 	if err := config.Load("config.json"); err != nil {
 		panic(err)
 	}
@@ -28,7 +31,11 @@ func init() {
 		panic(err)
 	}
 
-	if err := database.CreateScheme(); err != nil {
+	if err := database.CreateScheme(context); err != nil {
+		panic(err)
+	}
+
+	if err := database.UpsertCurrencyBasicData(context); err != nil {
 		panic(err)
 	}
 
@@ -37,7 +44,7 @@ func init() {
 
 func main() {
 	app := fiber.New(fiber.Config{
-		AppName: fmt.Sprintf("%s v%s", config.Data.AppName, config.Data.AppVersion),
+		AppName: fmt.Sprintf("%s v%s", config.ServerConfig.AppName, config.ServerConfig.AppVersion),
 	})
 
 	app.Use(cors.New(
@@ -46,18 +53,34 @@ func main() {
 		},
 	))
 
-	setExchangeRoute(app)
+	api := app.Group("/api")
+
+	setExchangeRoute(api)
 
 	app.Use("/", static.New("./public"))
 
-	app.Listen(":" + config.Data.Port)
+	app.Listen(":" + config.ServerConfig.Port)
 }
 
-func setExchangeRoute(app *fiber.App) {
-	repository := repositories.NewExchangeRepository()
-	service := services.NewExchangeService(repository)
-	handler := handlers.NewExchangeHandler(service)
+func setExchangeRoute(api fiber.Router) {
+	repository := repositories.NewCurrencyRepository()
+	service := services.NewCurrencyService(repository)
+	handler := handlers.NewCurrencyHandler(service)
 
-	app.Get("/api/exchange/:currency_code", handler.GetExchangeData)
-	app.Get("/api/update/", handler.UpdateExchangeData)
+	api.Get("/currencyCodes", handler.GetCurrencyCodes)
+	api.Get("/currency/:currencyCode", handler.GetCurrency)
+	api.Patch("/currency/", handler.UpdateDatabase)
+	api.Post("/currency/", handler.UpdateAMOS)
+
+	// Scheduler
+	// c := cron.New()
+	// c.AddFunc("0 0 0 * * *", func() {
+	// 	t := time.Now().UTC()
+	// 	d := t.Weekday()
+
+	// 	if d != time.Saturday && d != time.Sunday {
+	// 		service.UpdateAMOS(context.Background(), t.Format("2006-01-02"))
+	// 	}
+	// })
+	// c.Start()
 }

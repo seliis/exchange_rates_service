@@ -1,17 +1,141 @@
 {
     "app_name": "Exchange Rates Service",
     "app_version": "0.0.1",
-    "debug_mode": true,
-    "base": "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON",
-    "api_key": "CtRNXmPEu3mUfNA8XqDXOHzZHlFxvWBL",
-    "data_type": "AP01",
+    "is_debug_mode": true,
     "port": "8080",
-    "currencies": [
-        "USD",
-        "CHF",
-        "EUR",
-        "GBP",
-        "JPY",
-        "THB"
-    ]
+    "amos": {
+        "base_url": "https://10.0.54.2:5081/service",
+        "end_points": {
+            "import_currency": "/importCurrency"
+        },
+        "auth": {
+            "id": "admin",
+            "password": "8Z7Plc3p!!"
+        },
+        "key_currency_code": "USD"
+    },
+    "standard_currency_code": "KRW",
+    "data_source": {
+        "name": "Korea Exim Bank",
+        "base_url": "https://www.koreaexim.go.kr/site/program/financial/exchangeJSON",
+        "api_key": "CtRNXmPEu3mUfNA8XqDXOHzZHlFxvWBL",
+        "data_type": "AP01",
+        "supported_currencies": [
+            {
+                "currency_code": "AED",
+                "currency_name": "United Arab Emirates Dirham",
+                "is_applicable": false
+            },
+            {
+                "currency_code": "AUD",
+                "currency_name": "Australian Dollar",
+                "is_applicable": false
+            },
+            {
+                "currency_code": "BHD",
+                "currency_name": "Bahraini Dinar",
+                "is_applicable": false
+            },
+            {
+                "currency_code": "BND",
+                "currency_name": "Brunei Dollar",
+                "is_applicable": false
+            },
+            {
+                "currency_code": "CAD",
+                "currency_name": "Canadian Dollar",
+                "is_applicable": false
+            },
+            {
+                "currency_code": "CHF",
+                "currency_name": "Swiss Franc",
+                "is_applicable": true
+            },
+            {
+                "currency_code": "CNH",
+                "currency_name": "Chinese Yuan",
+                "is_applicable": false
+            },
+            {
+                "currency_code": "DKK",
+                "currency_name": "Danish Krone",
+                "is_applicable": false
+            },
+            {
+                "currency_code": "EUR",
+                "currency_name": "Euro",
+                "is_applicable": true
+            },
+            {
+                "currency_code": "GBP",
+                "currency_name": "British Pound",
+                "is_applicable": true
+            },
+            {
+                "currency_code": "HKD",
+                "currency_name": "Hong Kong Dollar",
+                "is_applicable": false
+            },
+            {
+                "currency_code": "IDR",
+                "currency_name": "Indonesian Rupiah",
+                "is_applicable": false
+            },
+            {
+                "currency_code": "JPY",
+                "currency_name": "Japanese Yen",
+                "is_applicable": true
+            },
+            {
+                "currency_code": "KRW",
+                "currency_name": "Korean Won",
+                "is_applicable": true
+            },
+            {
+                "currency_code": "KWD",
+                "currency_name": "Kuwaiti Dinar",
+                "is_applicable": false
+            },
+            {
+                "currency_code": "MYR",
+                "currency_name": "Malaysian Ringgit",
+                "is_applicable": false
+            },
+            {
+                "currency_code": "NOK",
+                "currency_name": "Norwegian Krone",
+                "is_applicable": false
+            },
+            {
+                "currency_code": "NZD",
+                "currency_name": "New Zealand Dollar",
+                "is_applicable": false
+            },
+            {
+                "currency_code": "SAR",
+                "currency_name": "Saudi Riyal",
+                "is_applicable": false
+            },
+            {
+                "currency_code": "SEK",
+                "currency_name": "Swedish Krona",
+                "is_applicable": false
+            },
+            {
+                "currency_code": "SGD",
+                "currency_name": "Singapore Dollar",
+                "is_applicable": true
+            },
+            {
+                "currency_code": "THB",
+                "currency_name": "Thai Baht",
+                "is_applicable": true
+            },
+            {
+                "currency_code": "USD",
+                "currency_name": "United States Dollar",
+                "is_applicable": true
+            }
+        ]
+    }
 }
